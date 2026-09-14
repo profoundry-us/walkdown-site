@@ -1,0 +1,18 @@
+# Fly.io config for the staging site (staging.walkdown.dev).
+# First-time setup: `fly apps create walkdown-site-staging -o profoundry`, then `fly deploy`.
+
+app = "walkdown-site-staging"
+primary_region = "dfw"
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
