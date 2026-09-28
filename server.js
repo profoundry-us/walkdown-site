@@ -32,6 +32,14 @@ export function createSiteServer() {
 	return createServer(async (request, response) => {
 		response.setHeader("X-Content-Type-Options", "nosniff");
 		response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+		// www is an alias, not a second site: one address for links and search.
+		const host = request.headers.host ?? "";
+		if (host.startsWith("www.")) {
+			response.writeHead(301, {
+				Location: `https://${host.slice(4)}${request.url}`,
+			});
+			return response.end();
+		}
 		if (!["GET", "HEAD"].includes(request.method)) {
 			response.writeHead(405, { Allow: "GET, HEAD" });
 			return response.end("Method not allowed");

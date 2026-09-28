@@ -39,6 +39,18 @@ test("serves the agent setup guide as markdown at /setup", async () => {
 	}
 });
 
+test("www redirects to the bare domain, keeping the path", async () => {
+	const { request } = await import("node:http");
+	const { port } = server.address();
+	const response = await new Promise((resolve, reject) => {
+		request({ port, path: "/setup?x=1", headers: { host: "www.walkdown.dev" } }, resolve)
+			.on("error", reject)
+			.end();
+	});
+	assert.equal(response.statusCode, 301);
+	assert.equal(response.headers.location, "https://walkdown.dev/setup?x=1");
+});
+
 test("supports HEAD without a response body", async () => {
 	const response = await fetch(base, { method: "HEAD" });
 	assert.equal(response.status, 200);
