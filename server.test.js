@@ -27,6 +27,18 @@ test("serves the page, code, stylesheet, and actual screenshots", async () => {
 	}
 });
 
+test("serves the agent setup guide as markdown at /setup", async () => {
+	for (const path of ["/setup", "/setup.md"]) {
+		const response = await fetch(base + path);
+		assert.equal(response.status, 200, path);
+		assert.equal(
+			response.headers.get("content-type").split(";")[0],
+			"text/markdown",
+		);
+		assert.match(await response.text(), /^# Set up walkdown/);
+	}
+});
+
 test("supports HEAD without a response body", async () => {
 	const response = await fetch(base, { method: "HEAD" });
 	assert.equal(response.status, 200);

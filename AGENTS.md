@@ -16,15 +16,16 @@ This is an independent marketing-site mockup, not part of the sibling Walkdown a
 
 ## Assets and product claims
 
-- The four `assets/walkdown-*.jpg` images are real captures of the running Walkdown example project at 1440 × 780, captured September 10, 2026. They show actual example data, not current verification of another project.
+- The four `assets/walkdown-*.jpg` images are real captures of the running Walkdown example project: a 1440 × 780 viewport at 2× (2880 × 1560 files), captured September 27, 2026 from the lit-era panel. They show actual example data, not current verification of another project. The example's prototype pages load their stylesheet from `http://localhost:4700`, so a capture that serves walkdown on another port has to map that origin across.
 - No verdicts or feedback were submitted to produce the images. The site's comparison is a wipe between captured images, not a live embedded app; its caption says so.
 - `research/` holds visual references from Highball, the previous Claude artifact, Linear, Zed, Raycast, Warp, and Resend, plus mockup review captures. Third-party screenshots are research only and must not be used as marketing assets.
 - Typography is Manrope, Instrument Serif, and DM Mono, loaded from Google Fonts, with local fallbacks. There are no analytics.
-- The agent setup prompt points to the public GitHub setup guide. `walkdown.dev/setup` could not be reached during implementation; do not assume it is live.
+- The agent setup prompt points to `https://walkdown.dev/setup`, which this server answers with `setup.md` as `text/markdown`. `setup.md` is a copy: the canonical file is `site/setup.md` in the walkdown repository, and `npm run sync:setup` refreshes it from a sibling checkout.
 - Walkdown installs from its Git clone, not npm. It links existing tests and keeps checks, agent judgments, and human role signoffs distinct. Avoid invented endorsements, adoption statistics, or automated-human-acceptance claims.
 
 ## Deployment
 
-- Staging is the Fly.io app `walkdown-site-staging` in the Profoundry org (region `dfw`), served at `https://staging.walkdown.dev`. `fly deploy` from this directory builds the `Dockerfile` (Tailwind build stage, then `node server.js` on port 8080 with `HOST=0.0.0.0`) and ships it. There is no production app yet.
+- Staging is the Fly.io app `walkdown-site-staging` in the Profoundry org (region `dfw`), served at `https://staging.walkdown.dev`. `fly deploy` from this directory builds the `Dockerfile` (Tailwind build stage, then `node server.js` on port 8080 with `HOST=0.0.0.0`) and ships it.
+- Production is the Fly.io app `walkdown-site` (same org and region), served at `https://walkdown.dev` and `https://www.walkdown.dev`. `fly deploy -c fly.production.toml` ships it; deploy staging first and look before shipping production.
 - DNS for `walkdown.dev` is on Cloudflare (zone `walkdown.dev`, DNS-only A/AAAA records pointing at the Fly app's IPs, not proxied, so Fly terminates TLS with its own certificate). Changing the app's IPs means updating those records and re-running `fly certs check staging.walkdown.dev`.
 - `server.js` binds to `127.0.0.1` unless `HOST` is set; the container sets it. `.dockerignore` keeps `research/`, tests, and `node_modules` out of the image, and the server's public-file list still governs what is served.

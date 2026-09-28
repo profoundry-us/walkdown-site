@@ -10,6 +10,7 @@ const types = {
 	".js": "text/javascript; charset=utf-8",
 	".jpg": "image/jpeg",
 	".svg": "image/svg+xml",
+	".md": "text/markdown; charset=utf-8",
 };
 const publicFiles = new Set([
 	"index.html",
@@ -21,7 +22,11 @@ const publicFiles = new Set([
 	"assets/walkdown-review.jpg",
 	"assets/walkdown-prototype.jpg",
 	"assets/walkdown-feedback.jpg",
+	"setup.md",
 ]);
+// The bootstrap page an agent is pointed at ("visit walkdown.dev/setup").
+// Markdown on purpose: an agent fetching a URL reliably gets text.
+const aliases = new Map([["setup", "setup.md"]]);
 
 export function createSiteServer() {
 	return createServer(async (request, response) => {
@@ -41,6 +46,7 @@ export function createSiteServer() {
 			response.writeHead(400);
 			return response.end("Bad request");
 		}
+		file = aliases.get(file) ?? file;
 		if (!publicFiles.has(file)) {
 			response.writeHead(404);
 			return response.end("Not found");
